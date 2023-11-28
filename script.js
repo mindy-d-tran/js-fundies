@@ -20,4 +20,23 @@ const assignmentGroup = {
     }]
 };
 
-console.log(assignmentGroup);
+const learnerSubmission =[
+    {
+        learner_id: 1,
+        assignment_id: 1,
+        submission: {
+            submitted_at: "02/23/24",
+            score: 15
+        }
+    },
+    {
+        learner_id: 2,
+        assignment_id: 1,
+        submission: {
+            submitted_at: "03/23/24",
+            score: 17
+        }
+    }
+];
+
+console.log(learnerSubmission);
