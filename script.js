@@ -3,4 +3,17 @@ const courseInfo = {
     name: "How to Win Your Cat Over"
 };
 
-console.log(courseInfo);
+const assignmentGroup = {
+    id: 1,
+    name: "owo",
+    //id of course the assgnment group belongs to 
+    course_id: 1,
+    // percentage weight of the entire assignment group
+    group_weight: 30,
+    assignments: [{
+        id: 1,
+        
+    }]
+};
+
+console.log(assignmentGroup);
