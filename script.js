@@ -12,7 +12,11 @@ const assignmentGroup = {
     group_weight: 30,
     assignments: [{
         id: 1,
-        
+        name: "assignment name",
+        // due date for assignment
+        due_at: "07/20/24",
+        // max pnts possible for assignments
+        points_possible: 20
     }]
 };
 
