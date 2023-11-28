@@ -1,45 +1,123 @@
-const courseInfo = {
-    id: 1,
-    name: "How to Win Your Cat Over"
-};
+// const courseInfo = {
+//     id: 1,
+//     name: "How to Win Your Cat Over"
+// };
 
-const assignmentGroup = {
-    id: 1,
-    name: "owo",
-    //id of course the assgnment group belongs to 
-    course_id: 1,
-    // percentage weight of the entire assignment group
-    group_weight: 30,
-    assignments: [{
+// const assignmentGroup = {
+//     id: 1,
+//     name: "owo",
+//     //id of course the assgnment group belongs to 
+//     course_id: 1,
+//     // percentage weight of the entire assignment group
+//     group_weight: 30,
+//     assignments: [{
+//         id: 1,
+//         name: "assignment name",
+//         // due date for assignment
+//         due_at: "07/20/2024",
+//         // max pnts possible for assignments
+//         points_possible: 20
+//     }]
+// };
+
+// const learnerSubmission =[
+//     {
+//         learner_id: 1,
+//         assignment_id: 1,
+//         submission: {
+//             submitted_at: "02/23/2024",
+//             score: 15
+//         }
+//     },
+//     {
+//         learner_id: 2,
+//         assignment_id: 1,
+//         submission: {
+//             submitted_at: "03/23/2024",
+//             score: 17
+//         }
+//     }
+// ];
+
+// The provided course information.
+const CourseInfo = {
+    id: 451,
+    name: "Introduction to JavaScript"
+  };
+  
+  // The provided assignment group.
+  const AssignmentGroup = {
+    id: 12345,
+    name: "Fundamentals of JavaScript",
+    course_id: 451,
+    group_weight: 25,
+    assignments: [
+      {
         id: 1,
-        name: "assignment name",
-        // due date for assignment
-        due_at: "07/20/2024",
-        // max pnts possible for assignments
-        points_possible: 20
-    }]
-};
-
-const learnerSubmission =[
+        name: "Declare a Variable",
+        due_at: "2023-01-25",
+        points_possible: 50
+      },
+      {
+        id: 2,
+        name: "Write a Function",
+        due_at: "2023-02-27",
+        points_possible: 150
+      },
+      {
+        id: 3,
+        name: "Code the World",
+        due_at: "3156-11-15",
+        points_possible: 500
+      }
+    ]
+  };
+  
+  // The provided learner submission data.
+  const LearnerSubmissions = [
     {
-        learner_id: 1,
-        assignment_id: 1,
-        submission: {
-            submitted_at: "02/23/2024",
-            score: 15
-        }
+      learner_id: 125,
+      assignment_id: 1,
+      submission: {
+        submitted_at: "2023-01-25",
+        score: 47
+      }
     },
     {
-        learner_id: 2,
-        assignment_id: 1,
-        submission: {
-            submitted_at: "03/23/2024",
-            score: 17
-        }
+      learner_id: 125,
+      assignment_id: 2,
+      submission: {
+        submitted_at: "2023-02-12",
+        score: 150
+      }
+    },
+    {
+      learner_id: 125,
+      assignment_id: 3,
+      submission: {
+        submitted_at: "2023-01-25",
+        score: 400
+      }
+    },
+    {
+      learner_id: 132,
+      assignment_id: 1,
+      submission: {
+        submitted_at: "2023-01-24",
+        score: 39
+      }
+    },
+    {
+      learner_id: 132,
+      assignment_id: 2,
+      submission: {
+        submitted_at: "2023-03-07",
+        score: 140
+      }
     }
-];
-
-console.log(learnerSubmission);
+  ];
+  
+console.log(LearnerSubmissions);
 
 function getLearnerData(course, assignGroup, submissions){
 
