@@ -119,8 +119,16 @@ const CourseInfo = {
   
 console.log(LearnerSubmissions);
 
+console.log(getUniqueID(LearnerSubmissions));
+
 function getLearnerData(course, assignGroup, submissions){
 
+}
+
+// get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
+function getUniqueID(submission){
+    let learnerID = new Set(submission.map(prop => prop.learner_id));
+    return learnerID;
 }
 
 /*result should look like 
