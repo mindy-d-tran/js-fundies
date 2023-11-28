@@ -119,15 +119,19 @@ const CourseInfo = {
   
 console.log(LearnerSubmissions);
 
-console.log(getUniqueID(LearnerSubmissions));
+console.log(getLearnerData(LearnerSubmissions));
 
-function getLearnerData(course, assignGroup, submissions){
+function getLearnerData(submissions){
+    let result = [];
+    const uniqueID = getUniqueID(submissions);
+    uniqueID.forEach(element => result.push({id: element}));
 
+    return result;
 }
 
 // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
 function getUniqueID(submission){
-    let learnerID = new Set(submission.map(prop => prop.learner_id));
+    const learnerID = new Set(submission.map(prop => prop.learner_id));
     return learnerID;
 }
 
