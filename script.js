@@ -117,7 +117,7 @@ const CourseInfo = {
     }
   ];
 
-const getLearnerData = (submissions) =>{
+const getLearnerData = (assignGroup, submissions) =>{
     let result = [];
     const uniqueID = getUniqueID(submissions);
     uniqueID.forEach(element => result.push({id: element}));
@@ -131,8 +131,9 @@ const getLearnerData = (submissions) =>{
 
     for(let i=0; i<result.length; i++){
         let assID = makeAssignmentList(result[i]);
-        let avgValue = calculateAvg(assID, i);
-        console.log(avgValue);
+        let avgValue = calculateScore(assID, i);
+        let totalPoints;
+        // result[i].avg = avgValue/ totalPoints;
     }
 
     return result;
@@ -151,7 +152,7 @@ const getLearnerData = (submissions) =>{
         return assID;
     }
 
-    function calculateAvg (arr, index){
+    function calculateScore (arr, index){
         let sum = 0;
         for(let i=0; i<arr.length; i++){
             sum+=result[index][arr[i]];
@@ -160,7 +161,7 @@ const getLearnerData = (submissions) =>{
     }
 }
 
-console.log(getLearnerData(LearnerSubmissions));
+console.log(getLearnerData(AssignmentGroup, LearnerSubmissions));
 
 
 /*result should look like 
