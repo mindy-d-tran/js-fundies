@@ -127,16 +127,18 @@ const getLearnerData = (submissions) =>{
         let index = result.findIndex(element => element.id === currentId);
         let assignment = element.assignment_id;
         result[index][assignment] = element.submission.score;
+    });
+
+    for(let i=0; i<result.length; i++){
+        let assID = makeAssignmentList(result[i]);
+        let avgValue = calculateAvg(assID, i);
+        console.log(avgValue);
     }
-    );
-    let x = makeAssignmentList(result[0]);
-    console.log(x);
-    
-    console.log(calculateAvg(x))
+
     return result;
 
     // making nested functions so those functions can be "private"
-
+    //////////////////////////////////////////////////////////////////
     // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
     function getUniqueID(submission){
         const learnerID = new Set(submission.map(prop => prop.learner_id));
@@ -149,10 +151,10 @@ const getLearnerData = (submissions) =>{
         return assID;
     }
 
-    function calculateAvg (arr){
+    function calculateAvg (arr, index){
         let sum = 0;
         for(let i=0; i<arr.length; i++){
-            sum+=result[0][arr[i]];
+            sum+=result[index][arr[i]];
         }
         return sum;
     }
