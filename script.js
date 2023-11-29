@@ -117,7 +117,6 @@ const CourseInfo = {
     }
   ];
   
-console.log(LearnerSubmissions);
 
 console.log(getLearnerData(LearnerSubmissions));
 
@@ -126,6 +125,12 @@ function getLearnerData(submissions){
     const uniqueID = getUniqueID(submissions);
     uniqueID.forEach(element => result.push({id: element}));
 
+    submissions.forEach( element =>{
+        let currentId = element.learner_id;
+        let index = result.findIndex(element => element.id === currentId);
+        console.log(index);
+    }
+    );
     return result;
 }
 
@@ -133,6 +138,12 @@ function getLearnerData(submissions){
 function getUniqueID(submission){
     const learnerID = new Set(submission.map(prop => prop.learner_id));
     return learnerID;
+}
+
+function calculateAvg (){
+    let sum = 0;
+    AssignmentGroup.assignments.forEach(element => sum+=element.points_possible);
+    return sum;
 }
 
 /*result should look like 
@@ -145,6 +156,8 @@ function getUniqueID(submission){
     // e.g. a learner with 50/100 on one assignment and 190/200 on another
     // would have a weighted average score of 240/300 = 80%.
     // current final grade in class
+
+    // input: learnerSubmission.submision.score, assignmentgroup.assignments[i].points_possible
     "avg": number,
 
     // each assignment should have a key with its ID,
