@@ -112,6 +112,11 @@ const getLearnerData = (assignGroup, submissions) =>{
     function makeAssignmentList (obj) {
         let assID = Object.keys(obj);
         assID.pop();
+
+        // get date
+        const date = new Date();
+        const fullDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+        
         return assID;
     }
 
