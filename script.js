@@ -132,8 +132,8 @@ const getLearnerData = (assignGroup, submissions) =>{
     for(let i=0; i<result.length; i++){
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
-        let totalPoints;
-        // result[i].avg = avgValue/ totalPoints;
+        let totalPoints = calculateTotalPoints(assID, assignGroup);
+        result[i].avg = (avgValue/totalPoints).toFixed(2);
     }
 
     return result;
@@ -156,6 +156,15 @@ const getLearnerData = (assignGroup, submissions) =>{
         let sum = 0;
         for(let i=0; i<arr.length; i++){
             sum+=result[index][arr[i]];
+        }
+        return sum;
+    }
+
+    function calculateTotalPoints (arr) {
+        let sum = 0;
+        for (let i = 0; i < arr.length; i++) {
+            const index = assignGroup.assignments.findIndex(element => element.id == arr[i]);
+            sum += assignGroup.assignments[index].points_possible;
         }
         return sum;
     }
