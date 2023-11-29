@@ -77,6 +77,11 @@ const CourseInfo = {
     }
   ];
 
+
+const getIDIndex = (obj, index) => {
+  return obj.findIndex(element => element.id === index);
+}
+
 const getLearnerData = (assignGroup, submissions) =>{
     let result = [];
     // add unique ids into the array
@@ -86,7 +91,7 @@ const getLearnerData = (assignGroup, submissions) =>{
     // add the submissions to user's data
     submissions.forEach( element =>{
         let currentId = element.learner_id;
-        let index = result.findIndex(element => element.id === currentId);
+        let index = getIDIndex(result, currentId);
         let assignment = element.assignment_id;
         result[index][assignment] = element.submission.score;
     });
@@ -113,10 +118,10 @@ const getLearnerData = (assignGroup, submissions) =>{
         let assID = Object.keys(obj);
         assID.pop();
 
-        // get date
+        // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
         const date = new Date();
         const fullDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-        
+        fullDate > assignGroup.assignments[1].due_at ? console.log("owo"): console.log("bad owo");
         return assID;
     }
 
