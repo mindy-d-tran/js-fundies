@@ -129,6 +129,10 @@ const getLearnerData = (submissions) =>{
         result[index][assignment] = element.submission.score;
     }
     );
+    let x = makeAssignmentList(result[0]);
+    console.log(x);
+    
+    console.log(calculateAvg(x))
     return result;
 
     // making nested functions so those functions can be "private"
@@ -138,15 +142,24 @@ const getLearnerData = (submissions) =>{
         const learnerID = new Set(submission.map(prop => prop.learner_id));
         return learnerID;
     }
+
+    function makeAssignmentList (obj) {
+        let assID = Object.keys(obj);
+        assID.pop();
+        return assID;
+    }
+
+    function calculateAvg (arr){
+        let sum = 0;
+        for(let i=0; i<arr.length; i++){
+            sum+=result[0][arr[i]];
+        }
+        return sum;
+    }
 }
 
 console.log(getLearnerData(LearnerSubmissions));
 
-function calculateAvg (){
-    let sum = 0;
-    AssignmentGroup.assignments.forEach(element => sum+=element.points_possible);
-    return sum;
-}
 
 /*result should look like 
 {
