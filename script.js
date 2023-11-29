@@ -116,11 +116,8 @@ const CourseInfo = {
       }
     }
   ];
-  
 
-console.log(getLearnerData(LearnerSubmissions));
-
-function getLearnerData(submissions){
+const getLearnerData = (submissions) =>{
     let result = [];
     const uniqueID = getUniqueID(submissions);
     uniqueID.forEach(element => result.push({id: element}));
@@ -133,13 +130,17 @@ function getLearnerData(submissions){
     }
     );
     return result;
+
+    // making nested functions so those functions can be "private"
+
+    // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
+    function getUniqueID(submission){
+        const learnerID = new Set(submission.map(prop => prop.learner_id));
+        return learnerID;
+    }
 }
 
-// get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
-function getUniqueID(submission){
-    const learnerID = new Set(submission.map(prop => prop.learner_id));
-    return learnerID;
-}
+console.log(getLearnerData(LearnerSubmissions));
 
 function calculateAvg (){
     let sum = 0;
