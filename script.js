@@ -127,8 +127,10 @@ function getLearnerData(submissions){
 
     submissions.forEach( element =>{
         let currentId = element.learner_id;
+        // console.log(element);
         let index = result.findIndex(element => element.id === currentId);
-        console.log(index);
+        let assignment = element.assignment_id;
+        console.log(assignment);
     }
     );
     return result;
