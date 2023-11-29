@@ -79,9 +79,11 @@ const CourseInfo = {
 
 const getLearnerData = (assignGroup, submissions) =>{
     let result = [];
+    // add unique ids into the array
     const uniqueID = getUniqueID(submissions);
     uniqueID.forEach(element => result.push({id: element}));
 
+    // add the submissions to user's data
     submissions.forEach( element =>{
         let currentId = element.learner_id;
         let index = result.findIndex(element => element.id === currentId);
@@ -89,6 +91,7 @@ const getLearnerData = (assignGroup, submissions) =>{
         result[index][assignment] = element.submission.score;
     });
 
+    // add avg in result array
     for(let i=0; i<result.length; i++){
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
