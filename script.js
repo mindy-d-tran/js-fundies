@@ -131,7 +131,7 @@ const getLearnerData = (course, assignGroup, submissions) => {
       throw "Course ID is not matching with course ID in Assignment Group";
     }
   } catch (e) {
-    console.log(e);
+    return e;
   }
 
   // making nested functions so those functions can be "private"
