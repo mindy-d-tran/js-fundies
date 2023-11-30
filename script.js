@@ -1,165 +1,164 @@
-
 // The provided course information.
 const CourseInfo = {
-    id: 451,
-    name: "Introduction to JavaScript"
-  };
-  
-  // The provided assignment group.
-  const AssignmentGroup = {
-    id: 12345,
-    name: "Fundamentals of JavaScript",
-    course_id: 451,
-    group_weight: 25,
-    assignments: [
-      {
-        id: 1,
-        name: "Declare a Variable",
-        due_at: "2023-01-25",
-        points_possible: 50
-      },
-      {
-        id: 2,
-        name: "Write a Function",
-        due_at: "2023-02-27",
-        points_possible: 150
-      },
-      {
-        id: 3,
-        name: "Code the World",
-        due_at: "3156-11-15",
-        points_possible: 500
-      }
-    ]
-  };
-  
-  // The provided learner submission data.
-  const LearnerSubmissions = [
-    {
-      learner_id: 125,
-      assignment_id: 1,
-      submission: {
-        submitted_at: "2023-01-25",
-        score: 47
-      }
-    },
-    {
-      learner_id: 125,
-      assignment_id: 2,
-      submission: {
-        submitted_at: "2023-02-12",
-        score: 150
-      }
-    },
-    {
-      learner_id: 125,
-      assignment_id: 3,
-      submission: {
-        submitted_at: "2023-01-25",
-        score: 400
-      }
-    },
-    {
-      learner_id: 132,
-      assignment_id: 1,
-      submission: {
-        submitted_at: "2023-01-24",
-        score: 39
-      }
-    },
-    {
-      learner_id: 132,
-      assignment_id: 2,
-      submission: {
-        submitted_at: "2023-03-07",
-        score: 140
-      }
-    }
-  ];
+  id: 451,
+  name: "Introduction to JavaScript",
+};
 
+// The provided assignment group.
+const AssignmentGroup = {
+  id: 12345,
+  name: "Fundamentals of JavaScript",
+  course_id: 451,
+  group_weight: 25,
+  assignments: [
+    {
+      id: 1,
+      name: "Declare a Variable",
+      due_at: "2023-01-25",
+      points_possible: 50,
+    },
+    {
+      id: 2,
+      name: "Write a Function",
+      due_at: "2023-02-27",
+      points_possible: 150,
+    },
+    {
+      id: 3,
+      name: "Code the World",
+      due_at: "3156-11-15",
+      points_possible: 500,
+    },
+  ],
+};
+
+// The provided learner submission data.
+const LearnerSubmissions = [
+  {
+    learner_id: 125,
+    assignment_id: 1,
+    submission: {
+      submitted_at: "2023-01-25",
+      score: 47,
+    },
+  },
+  {
+    learner_id: 125,
+    assignment_id: 2,
+    submission: {
+      submitted_at: "2023-02-12",
+      score: 150,
+    },
+  },
+  {
+    learner_id: 125,
+    assignment_id: 3,
+    submission: {
+      submitted_at: "2023-01-25",
+      score: 400,
+    },
+  },
+  {
+    learner_id: 132,
+    assignment_id: 1,
+    submission: {
+      submitted_at: "2023-01-24",
+      score: 39,
+    },
+  },
+  {
+    learner_id: 132,
+    assignment_id: 2,
+    submission: {
+      submitted_at: "2023-03-07",
+      score: 140,
+    },
+  },
+];
 
 const getIDIndex = (obj, index) => {
-  return obj.findIndex(element => element.id == index);
-}
+  return obj.findIndex((element) => element.id == index);
+};
 
 const getCurrentDate = () => {
   // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
   const date = new Date();
-  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-}
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+};
 
-const getLearnerData = (assignGroup, submissions) =>{
-    let result = [];
-    // add unique ids into the array
-    const uniqueID = getUniqueID(submissions);
-    uniqueID.forEach(element => result.push({id: element}));
+const getLearnerData = (assignGroup, submissions) => {
+  let result = [];
+  // add unique ids into the array
+  const uniqueID = getUniqueID(submissions);
+  uniqueID.forEach((element) => result.push({ id: element }));
 
-    // add the submissions to user's data
-    submissions.forEach( element =>{
-      
-      const assignment = element.assignment_id;
-      const assignmentId = getIDIndex(assignGroup.assignments,assignment);
-      
-      if(getCurrentDate() > assignGroup.assignments[assignmentId].due_at){
+  // add the submissions to user's data
+  submissions.forEach((element) => {
+    const assignment = element.assignment_id;
+    const assignmentId = getIDIndex(assignGroup.assignments, assignment);
 
-        const currentId = element.learner_id;
-        const index = getIDIndex(result, currentId);
+    if (getCurrentDate() > assignGroup.assignments[assignmentId].due_at) {
+      const currentId = element.learner_id;
+      const index = getIDIndex(result, currentId);
 
-        let finalScore = element.submission.score;
-        
-        let points_possible = assignGroup.assignments[assignmentId].points_possible
-        if(element.submission.submitted_at > assignGroup.assignments[assignmentId].due_at){
-          finalScore-=(points_possible*0.1);
-        }
+      let finalScore = element.submission.score;
 
-        result[index][assignment] = finalScore/points_possible;
+      let points_possible =
+        assignGroup.assignments[assignmentId].points_possible;
+      if (
+        element.submission.submitted_at >
+        assignGroup.assignments[assignmentId].due_at
+      ) {
+        finalScore -= points_possible * 0.1;
       }
-    });
 
-    // add avg in result array
-    for(let i=0; i<result.length; i++){
-        let assID = makeAssignmentList(result[i]);
-        let avgValue = calculateScore(assID, i);
-        let totalPoints = calculateTotalPoints(assID, assignGroup);
-        result[i].avg = parseFloat((avgValue).toFixed(2));
+      result[index][assignment] = finalScore / points_possible;
     }
+  });
 
-    return result;
+  // add avg in result array
+  for (let i = 0; i < result.length; i++) {
+    let assID = makeAssignmentList(result[i]);
+    let avgValue = calculateScore(assID, i);
+    let totalPoints = calculateTotalPoints(assID, assignGroup);
+    result[i].avg = parseFloat(avgValue.toFixed(2));
+  }
 
-    // making nested functions so those functions can be "private"
-    //////////////////////////////////////////////////////////////////
-    // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
-    function getUniqueID(submission){
-        const learnerID = new Set(submission.map(prop => prop.learner_id));
-        return learnerID;
+  return result;
+
+  // making nested functions so those functions can be "private"
+  //////////////////////////////////////////////////////////////////
+  // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
+  function getUniqueID(submission) {
+    const learnerID = new Set(submission.map((prop) => prop.learner_id));
+    return learnerID;
+  }
+
+  function makeAssignmentList(obj) {
+    const assID = Object.keys(obj);
+    assID.pop();
+    return assID;
+  }
+
+  function calculateScore(arr, index) {
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+      sum += result[index][arr[i]];
     }
+    return sum;
+  }
 
-    function makeAssignmentList (obj) {
-        const assID = Object.keys(obj);
-        assID.pop();
-        return assID;
+  function calculateTotalPoints(arr) {
+    let sum = 0;
+    for (let i = 0; i < arr.length; i++) {
+      const index = getIDIndex(assignGroup.assignments, arr[i]);
+      sum += assignGroup.assignments[index].points_possible;
     }
-
-    function calculateScore (arr, index){
-        let sum = 0;
-        for(let i=0; i<arr.length; i++){
-            sum+=result[index][arr[i]];
-        }
-        return sum;
-    }
-
-    function calculateTotalPoints (arr) {
-        let sum = 0;
-        for (let i = 0; i < arr.length; i++) {
-            const index = getIDIndex(assignGroup.assignments, arr[i]);
-            sum += assignGroup.assignments[index].points_possible;
-        }
-        return sum;
-    }
-}
+    return sum;
+  }
+};
 
 console.log(getLearnerData(AssignmentGroup, LearnerSubmissions));
-
 
 /*result should look like 
 {
