@@ -106,12 +106,14 @@ const getLearnerData = (course, assignGroup, submissions) => {
   // try to see if the course ID in given assignment group matches with the given course
   try {
     if (course.id === assignGroup.course_id) {
+      
       // add unique ids into the array
       const uniqueID = getUniqueID(submissions);
       uniqueID.forEach((element) => result.push({ id: element }));
 
       // add the submissions to user's data
       submissions.forEach((element) => {
+        //get current assignment id in learners submission
         const assignment = element.assignment_id;
         const assignmentId = getIDIndex(assignGroup.assignments, assignment);
 
@@ -130,7 +132,7 @@ const getLearnerData = (course, assignGroup, submissions) => {
             finalScore -= points_possible * 0.1;
           }
 
-          result[index][assignment] = finalScore;
+          result[index][assignment] = finalScore/points_possible;
         }
       });
 
