@@ -79,7 +79,7 @@ const CourseInfo = {
 
 
 const getIDIndex = (obj, index) => {
-  return obj.findIndex(element => element.id === index);
+  return obj.findIndex(element => element.id == index);
 }
 
 const getLearnerData = (assignGroup, submissions) =>{
@@ -101,7 +101,7 @@ const getLearnerData = (assignGroup, submissions) =>{
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
         let totalPoints = calculateTotalPoints(assID, assignGroup);
-        result[i].avg = (avgValue/totalPoints).toFixed(2);
+        result[i].avg = parseFloat((avgValue/totalPoints).toFixed(2));
     }
 
     return result;
@@ -121,7 +121,17 @@ const getLearnerData = (assignGroup, submissions) =>{
         // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
         const date = new Date();
         const fullDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
-        fullDate > assignGroup.assignments[1].due_at ? console.log("owo"): console.log("bad owo");
+
+        // loop through Array to remove id of assignments that not due yet
+        for(let i=0; i <assignGroup.assignments.length; i++){
+          if(fullDate < assignGroup.assignments[i].due_at) {
+            const index = assID.findIndex(a => a == assignGroup.assignments[i].id);
+            console.log(index);
+            assID.splice(index,1);
+          }
+        }
+
+        // fullDate > assignGroup.assignments[1].due_at ? console.log("owo"): console.log("bad owo");
         return assID;
     }
 
@@ -136,7 +146,7 @@ const getLearnerData = (assignGroup, submissions) =>{
     function calculateTotalPoints (arr) {
         let sum = 0;
         for (let i = 0; i < arr.length; i++) {
-            const index = assignGroup.assignments.findIndex(element => element.id == arr[i]);
+            const index = getIDIndex(assignGroup.assignments, arr[i]);
             sum += assignGroup.assignments[index].points_possible;
         }
         return sum;
