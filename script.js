@@ -76,18 +76,22 @@ const LearnerSubmissions = [
   },
 ];
 
+// get the id that matches
 const getIDIndex = (obj, index) => {
   return obj.findIndex((element) => element.id == index);
 };
 
+// get the current date without the time
 const getCurrentDate = () => {
   // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
   const date = new Date();
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
+// returns all students current grades, and individual submission grades
 const getLearnerData = (course, assignGroup, submissions) => {
   let result = [];
+  // try to see if the course ID in given assignment group matches with the given course
   try {
     if (course.id === assignGroup.course_id) {
       // add unique ids into the array
