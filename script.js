@@ -96,19 +96,24 @@ const getLearnerData = (assignGroup, submissions) =>{
 
     // add the submissions to user's data
     submissions.forEach( element =>{
+      
+      const assignment = element.assignment_id;
+      const assignmentId = getIDIndex(assignGroup.assignments,assignment);
+      
+      if(getCurrentDate() > assignGroup.assignments[assignmentId].due_at){
+
         const currentId = element.learner_id;
         const index = getIDIndex(result, currentId);
 
-        const assignment = element.assignment_id;
-        const assignmentId = getIDIndex(assignGroup.assignments,assignment);
         let finalScore = element.submission.score;
-
+        
         let points_possible = assignGroup.assignments[assignmentId].points_possible
         if(element.submission.submitted_at > assignGroup.assignments[assignmentId].due_at){
           finalScore-=(points_possible*0.1);
         }
 
         result[index][assignment] = finalScore/points_possible;
+      }
     });
 
     // add avg in result array
@@ -116,7 +121,7 @@ const getLearnerData = (assignGroup, submissions) =>{
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
         let totalPoints = calculateTotalPoints(assID, assignGroup);
-        result[i].avg = parseFloat((avgValue/totalPoints).toFixed(2));
+        result[i].avg = parseFloat((avgValue).toFixed(2));
     }
 
     return result;
@@ -132,17 +137,6 @@ const getLearnerData = (assignGroup, submissions) =>{
     function makeAssignmentList (obj) {
         const assID = Object.keys(obj);
         assID.pop();
-
-        const fullDate = getCurrentDate();
-
-        // loop through Array to remove id of assignments that not due yet
-        for(let i=0; i<assID.length;i++){
-          const index = getIDIndex(assignGroup.assignments, assID[i]);
-          if(fullDate < assignGroup.assignments[index].due_at) {
-            assID.splice(i,1);
-            i--;
-          }
-        }
         return assID;
     }
 
