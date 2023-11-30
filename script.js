@@ -118,7 +118,7 @@ const getLearnerData = (course, assignGroup, submissions) => {
             finalScore -= points_possible * 0.1;
           }
 
-          result[index][assignment] = finalScore / points_possible;
+          result[index][assignment] = finalScore;
         }
       });
 
@@ -127,7 +127,7 @@ const getLearnerData = (course, assignGroup, submissions) => {
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
         let totalPoints = calculateTotalPoints(assID, assignGroup);
-        result[i].avg = parseFloat(avgValue.toFixed(2));
+        result[i].avg = parseFloat(avgValue/totalPoints.toFixed(2));
       }
 
       return result;
