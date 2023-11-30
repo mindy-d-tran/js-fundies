@@ -82,6 +82,12 @@ const getIDIndex = (obj, index) => {
   return obj.findIndex(element => element.id == index);
 }
 
+const getCurrentDate = () => {
+  // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
+  const date = new Date();
+  return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+}
+
 const getLearnerData = (assignGroup, submissions) =>{
     let result = [];
     // add unique ids into the array
@@ -90,15 +96,23 @@ const getLearnerData = (assignGroup, submissions) =>{
 
     // add the submissions to user's data
     submissions.forEach( element =>{
-        let currentId = element.learner_id;
-        let index = getIDIndex(result, currentId);
-        let assignment = element.assignment_id;
-        result[index][assignment] = element.submission.score;
+        const currentId = element.learner_id;
+        const index = getIDIndex(result, currentId);
+
+        const assignment = element.assignment_id;
+        const assignmentId = getIDIndex(assignGroup.assignments,assignment);
+        let finalScore = element.submission.score;
+
+        let points_possible = assignGroup.assignments[assignmentId].points_possible
+        if(element.submission.submitted_at > assignGroup.assignments[assignmentId].due_at){
+          finalScore-=(points_possible*0.1);
+        }
+
+        result[index][assignment] = finalScore/points_possible;
     });
 
     // add avg in result array
     for(let i=0; i<result.length; i++){
-      console.log(i);
         let assID = makeAssignmentList(result[i]);
         let avgValue = calculateScore(assID, i);
         let totalPoints = calculateTotalPoints(assID, assignGroup);
@@ -119,9 +133,7 @@ const getLearnerData = (assignGroup, submissions) =>{
         const assID = Object.keys(obj);
         assID.pop();
 
-        // store date https://www.freecodecamp.org/news/javascript-get-current-date-todays-date-in-js/
-        const date = new Date();
-        const fullDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
+        const fullDate = getCurrentDate();
 
         // loop through Array to remove id of assignments that not due yet
         for(let i=0; i<assID.length;i++){
