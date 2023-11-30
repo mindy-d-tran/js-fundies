@@ -107,7 +107,7 @@ const getLearnerData = (course, assignGroup, submissions) => {
           const currentId = element.learner_id;
           const index = getIDIndex(result, currentId);
 
-          let finalScore = element.submission.score;
+          const finalScore = element.submission.score;
 
           let points_possible =
             assignGroup.assignments[assignmentId].points_possible;
@@ -124,9 +124,9 @@ const getLearnerData = (course, assignGroup, submissions) => {
 
       // add avg in result array
       for (let i = 0; i < result.length; i++) {
-        let assID = makeAssignmentList(result[i]);
-        let avgValue = calculateScore(assID, i);
-        let totalPoints = calculateTotalPoints(assID, assignGroup);
+        const assID = makeAssignmentList(result[i]);
+        const avgValue = calculateScore(assID, i);
+        const totalPoints = calculateTotalPoints(assID, assignGroup);
         result[i].avg = parseFloat(avgValue/totalPoints.toFixed(2));
       }
 
@@ -148,7 +148,13 @@ const getLearnerData = (course, assignGroup, submissions) => {
 
   function makeAssignmentList(obj) {
     const assID = Object.keys(obj);
-    assID.pop();
+    const regex = /[0-9]/;
+    for(let i=0; i<assID.length;i++){
+      if(regex.test(assID[i])) {
+        continue;
+      }
+      assID.pop();
+    }
     return assID;
   }
 
