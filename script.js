@@ -124,11 +124,11 @@ const getLearnerData = (assignGroup, submissions) =>{
         const fullDate = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;
 
         // loop through Array to remove id of assignments that not due yet
-        for(let i=0; i <assignGroup.assignments.length; i++){
-          console.log(assignGroup.assignments[i].due_at);
-          if(fullDate < assignGroup.assignments[i].due_at) {
-            const index = assID.findIndex(a => a == assignGroup.assignments[i].id);
-            assID.splice(index,1);
+        for(let i=0; i<assID.length;i++){
+          const index = getIDIndex(assignGroup.assignments, assID[i]);
+          if(fullDate < assignGroup.assignments[index].due_at) {
+            assID.splice(i,1);
+            i--;
           }
         }
         return assID;
