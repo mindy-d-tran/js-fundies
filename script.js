@@ -86,45 +86,53 @@ const getCurrentDate = () => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
-const getLearnerData = (assignGroup, submissions) => {
+const getLearnerData = (course, assignGroup, submissions) => {
   let result = [];
-  // add unique ids into the array
-  const uniqueID = getUniqueID(submissions);
-  uniqueID.forEach((element) => result.push({ id: element }));
+  try {
+    if (course.id === assignGroup.course_id) {
+      // add unique ids into the array
+      const uniqueID = getUniqueID(submissions);
+      uniqueID.forEach((element) => result.push({ id: element }));
 
-  // add the submissions to user's data
-  submissions.forEach((element) => {
-    const assignment = element.assignment_id;
-    const assignmentId = getIDIndex(assignGroup.assignments, assignment);
+      // add the submissions to user's data
+      submissions.forEach((element) => {
+        const assignment = element.assignment_id;
+        const assignmentId = getIDIndex(assignGroup.assignments, assignment);
 
-    if (getCurrentDate() > assignGroup.assignments[assignmentId].due_at) {
-      const currentId = element.learner_id;
-      const index = getIDIndex(result, currentId);
+        if (getCurrentDate() > assignGroup.assignments[assignmentId].due_at) {
+          const currentId = element.learner_id;
+          const index = getIDIndex(result, currentId);
 
-      let finalScore = element.submission.score;
+          let finalScore = element.submission.score;
 
-      let points_possible =
-        assignGroup.assignments[assignmentId].points_possible;
-      if (
-        element.submission.submitted_at >
-        assignGroup.assignments[assignmentId].due_at
-      ) {
-        finalScore -= points_possible * 0.1;
+          let points_possible =
+            assignGroup.assignments[assignmentId].points_possible;
+          if (
+            element.submission.submitted_at >
+            assignGroup.assignments[assignmentId].due_at
+          ) {
+            finalScore -= points_possible * 0.1;
+          }
+
+          result[index][assignment] = finalScore / points_possible;
+        }
+      });
+
+      // add avg in result array
+      for (let i = 0; i < result.length; i++) {
+        let assID = makeAssignmentList(result[i]);
+        let avgValue = calculateScore(assID, i);
+        let totalPoints = calculateTotalPoints(assID, assignGroup);
+        result[i].avg = parseFloat(avgValue.toFixed(2));
       }
 
-      result[index][assignment] = finalScore / points_possible;
+      return result;
+    } else {
+      throw "Course ID is not matching with course ID in Assignment Group";
     }
-  });
-
-  // add avg in result array
-  for (let i = 0; i < result.length; i++) {
-    let assID = makeAssignmentList(result[i]);
-    let avgValue = calculateScore(assID, i);
-    let totalPoints = calculateTotalPoints(assID, assignGroup);
-    result[i].avg = parseFloat(avgValue.toFixed(2));
+  } catch (e) {
+    console.log(e);
   }
-
-  return result;
 
   // making nested functions so those functions can be "private"
   //////////////////////////////////////////////////////////////////
@@ -158,7 +166,7 @@ const getLearnerData = (assignGroup, submissions) => {
   }
 };
 
-console.log(getLearnerData(AssignmentGroup, LearnerSubmissions));
+console.log(getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions));
 
 /*result should look like 
 {
