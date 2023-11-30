@@ -88,6 +88,18 @@ const getCurrentDate = () => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
+const makeAssignmentList = obj => {
+  const assID = Object.keys(obj);
+  const regex = /[0-9]/;
+  for(let i=0; i<assID.length;i++){
+    if(regex.test(assID[i])) {
+      continue;
+    }
+    assID.pop();
+  }
+  return assID;
+}
+
 // returns all students current grades, and individual submission grades
 const getLearnerData = (course, assignGroup, submissions) => {
   let result = [];
@@ -107,9 +119,9 @@ const getLearnerData = (course, assignGroup, submissions) => {
           const currentId = element.learner_id;
           const index = getIDIndex(result, currentId);
 
-          const finalScore = element.submission.score;
+          let finalScore = element.submission.score;
 
-          let points_possible =
+          const points_possible =
             assignGroup.assignments[assignmentId].points_possible;
           if (
             element.submission.submitted_at >
@@ -144,18 +156,6 @@ const getLearnerData = (course, assignGroup, submissions) => {
   function getUniqueID(submission) {
     const learnerID = new Set(submission.map((prop) => prop.learner_id));
     return learnerID;
-  }
-
-  function makeAssignmentList(obj) {
-    const assID = Object.keys(obj);
-    const regex = /[0-9]/;
-    for(let i=0; i<assID.length;i++){
-      if(regex.test(assID[i])) {
-        continue;
-      }
-      assID.pop();
-    }
-    return assID;
   }
 
   function calculateScore(arr, index) {
