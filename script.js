@@ -78,7 +78,12 @@ const LearnerSubmissions = [
 
 // get the id that matches
 const getIDIndex = (obj, index) => {
-  return obj.findIndex((element) => element.id == index);
+  // findIndex() will return -1 if it can't find anything that mactches the condition
+  if(obj.findIndex((element) => element.id == index) > -1){
+    return obj.findIndex((element) => element.id == index);
+  } else {
+    throw "Can not find matching IDs.";
+  }
 };
 
 // get the current date without the time
@@ -91,16 +96,25 @@ const getCurrentDate = () => {
 // make list of the id's from the result array
 const makeAssignmentList = (obj) => {
   const keys = Object.keys(obj);
-
   for (let i = 0; i < keys.length; i++) {
     // if id contains number keep it in the array.
     if (keys[i] !== "avg" && keys[i] !== "id") {
       continue;
     }
+    checkIDType(parseInt(keys[i]));
     // pop any element that's not a number
     keys.pop();
   }
   return keys;
+};
+
+// check if the ID is of type number
+const checkIDType = (id) => {
+  if (typeof id === "number") {
+    return true;
+  } else {
+    throw `ID ${id} is not type number`;
+  }
 };
 
 // returns all students current grades, and individual submission grades
@@ -108,6 +122,9 @@ const getLearnerData = (course, ag, submissions) => {
   let result = [];
   // try to see if the course ID in given assignment group matches with the given course
   try {
+    checkIDType(course.id);
+    checkIDType(ag.course_id);
+
     if (course.id === ag.course_id) {
       // add unique ids into the array
       result = getUniqueLearners(submissions);
@@ -115,13 +132,16 @@ const getLearnerData = (course, ag, submissions) => {
 
       // add the submissions to user's data
       submissions.forEach((element) => {
+        checkIDType(element.assignment_id);
         let finalScore = getFinalScore(
           ag,
           element.assignment_id,
           element.submission
         );
+        
+        checkIDType(element.learner_id);
         const resultIndex = getIDIndex(result, element.learner_id);
-        if(finalScore > -1) {
+        if (finalScore > -1) {
           result[resultIndex][element.assignment_id] = finalScore;
         }
       });
@@ -139,7 +159,7 @@ const getLearnerData = (course, ag, submissions) => {
         for (const key in element) {
           if (key !== "avg" && key !== "id") {
             const index = getIDIndex(ag.assignments, key);
-            if(ag.assignments[index].points_possible === 0) {
+            if (ag.assignments[index].points_possible === 0) {
               throw "Points possible is 0. Something is wrong.";
             }
             element[key] /= ag.assignments[index].points_possible;
@@ -189,7 +209,6 @@ function getFinalScore(ag, assignmentID, submission) {
   let finalScore = -1;
   //check if the due date past already
   if (getCurrentDate() > ag.assignments[assignmentIndex].due_at) {
-
     // store score student got on assignment
     finalScore = submission.score; //140
 
