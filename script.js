@@ -88,25 +88,24 @@ const getCurrentDate = () => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
-const makeAssignmentList = obj => {
-  const assID = Object.keys(obj);
+const makeAssignmentList = (obj) => {
+  const assignmentID = Object.keys(obj);
   const regex = /[0-9]/;
-  for(let i=0; i<assID.length;i++){
-    if(regex.test(assID[i])) {
+  for (let i = 0; i < assignmentID.length; i++) {
+    if (regex.test(assignmentID[i])) {
       continue;
     }
-    assID.pop();
+    assignmentID.pop();
   }
-  return assID;
-}
+  return assignmentID;
+};
 
 // returns all students current grades, and individual submission grades
-const getLearnerData = (course, assignGroup, submissions) => {
+const getLearnerData = (course, ag, submissions) => {
   let result = [];
   // try to see if the course ID in given assignment group matches with the given course
   try {
-    if (course.id === assignGroup.course_id) {
-      
+    if (course.id === ag.course_id) {
       // add unique ids into the array
       const uniqueID = getUniqueID(submissions);
       uniqueID.forEach((element) => result.push({ id: element }));
@@ -115,35 +114,56 @@ const getLearnerData = (course, assignGroup, submissions) => {
       submissions.forEach((element) => {
         //get current assignment id in learners submission
         const assignment = element.assignment_id;
-        const assignmentId = getIDIndex(assignGroup.assignments, assignment);
+        const assignmentId = getIDIndex(ag.assignments, assignment);
 
-        if (getCurrentDate() > assignGroup.assignments[assignmentId].due_at) {
+        //check if the due date past already
+        if (getCurrentDate() > ag.assignments[assignmentId].due_at) {
+          // get learner's ID
           const currentId = element.learner_id;
           const index = getIDIndex(result, currentId);
 
+          // store score student got on assignment
           let finalScore = element.submission.score;
 
-          const points_possible =
-            assignGroup.assignments[assignmentId].points_possible;
+          // store max poins they can recieve
+          const points_possible = ag.assignments[assignmentId].points_possible;
           if (
             element.submission.submitted_at >
-            assignGroup.assignments[assignmentId].due_at
+            ag.assignments[assignmentId].due_at
           ) {
             finalScore -= points_possible * 0.1;
           }
 
-          result[index][assignment] = finalScore/points_possible;
+          result[index][assignment] = finalScore;
         }
       });
 
       // add avg in result array
       for (let i = 0; i < result.length; i++) {
-        const assID = makeAssignmentList(result[i]);
-        const avgValue = calculateScore(assID, i);
-        const totalPoints = calculateTotalPoints(assID, assignGroup);
-        result[i].avg = parseFloat(avgValue/totalPoints.toFixed(2));
+        const assignmentID = makeAssignmentList(result[i]);
+        const avgValue = calculateScore(assignmentID, i);
+        const totalPoints = calculateTotalPoints(assignmentID, ag);
+        result[i].avg = parseFloat(avgValue / totalPoints.toFixed(2));
       }
 
+      result.forEach((element) => {
+        for (const key in element) {
+          const regex = /[0-9]/;
+          if (regex.test(key)) {
+            const index = getIDIndex(ag.assignments , key);
+            try{
+              if(ag.assignments[index].points_possible>0) {
+                element[key] /=ag.assignments[index].points_possible;
+                element[key] = parseFloat(element[key].toFixed(2));
+              } else {
+                throw "Possible Points is 0. Can not divide";
+              }
+            } catch(e){
+              return e;
+            }
+          }
+        }
+      });
       return result;
     } else {
       throw "Course ID is not matching with course ID in Assignment Group";
@@ -171,8 +191,8 @@ const getLearnerData = (course, assignGroup, submissions) => {
   function calculateTotalPoints(arr) {
     let sum = 0;
     for (let i = 0; i < arr.length; i++) {
-      const index = getIDIndex(assignGroup.assignments, arr[i]);
-      sum += assignGroup.assignments[index].points_possible;
+      const index = getIDIndex(ag.assignments, arr[i]);
+      sum += ag.assignments[index].points_possible;
     }
     return sum;
   }
