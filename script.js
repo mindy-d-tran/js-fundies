@@ -139,7 +139,9 @@ const getLearnerData = (course, ag, submissions) => {
         for (const key in element) {
           if (key !== "avg" && key !== "id") {
             const index = getIDIndex(ag.assignments, key);
-
+            if(ag.assignments[index].points_possible === 0) {
+              throw "Points possible is 0. Something is wrong.";
+            }
             element[key] /= ag.assignments[index].points_possible;
             element[key] = parseFloat(element[key].toFixed(2));
           }
