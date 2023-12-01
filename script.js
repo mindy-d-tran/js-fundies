@@ -127,6 +127,9 @@ const getLearnerData = (course, ag, submissions) => {
 
           // store max poins they can recieve
           const points_possible = ag.assignments[assignmentId].points_possible;
+          if (points_possible==0) {
+            throw "Points possible is 0. Something is wrong."
+          }
           if (
             element.submission.submitted_at >
             ag.assignments[assignmentId].due_at
@@ -150,17 +153,10 @@ const getLearnerData = (course, ag, submissions) => {
         for (const key in element) {
           const regex = /[0-9]/;
           if (regex.test(key)) {
-            const index = getIDIndex(ag.assignments , key);
-            try{
-              if(ag.assignments[index].points_possible>0) {
-                element[key] /=ag.assignments[index].points_possible;
-                element[key] = parseFloat(element[key].toFixed(2));
-              } else {
-                throw "Possible Points is 0. Can not divide";
-              }
-            } catch(e){
-              return e;
-            }
+            const index = getIDIndex(ag.assignments, key);
+
+            element[key] /= ag.assignments[index].points_possible;
+            element[key] = parseFloat(element[key].toFixed(2));
           }
         }
       });
@@ -198,6 +194,9 @@ const getLearnerData = (course, ag, submissions) => {
   }
 };
 
+console.log(CourseInfo);
+console.log(AssignmentGroup);
+console.log(LearnerSubmissions);
 console.log(getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions));
 
 /*result should look like 
