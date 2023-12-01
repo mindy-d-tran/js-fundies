@@ -90,17 +90,17 @@ const getCurrentDate = () => {
 
 // make list of the id's from the result array
 const makeAssignmentList = (obj) => {
-  const assignmentID = Object.keys(obj);
+  const assignmentIndex = Object.keys(obj);
   const regex = /[0-9]/;
-  for (let i = 0; i < assignmentID.length; i++) {
+  for (let i = 0; i < assignmentIndex.length; i++) {
     // if id contains number keep it in the array.
-    if (regex.test(assignmentID[i])) {
+    if (regex.test(assignmentIndex[i])) {
       continue;
     }
     // pop any element that's not a number
-    assignmentID.pop();
+    assignmentIndex.pop();
   }
-  return assignmentID;
+  return assignmentIndex;
 };
 
 // returns all students current grades, and individual submission grades
@@ -111,26 +111,26 @@ const getLearnerData = (course, ag, submissions) => {
     if (course.id === ag.course_id) {
 
       // add unique ids into the array
-      const uniqueID = getUniqueID(submissions);
-      uniqueID.forEach((element) => result.push({ id: element }));
+      const uniqueID = getUniqueIDs(submissions);
+      
 
       // add the submissions to user's data
       submissions.forEach((element) => {
         //get current assignment id in learners submission
-        const assignment = element.assignment_id;
-        const assignmentId = getIDIndex(ag.assignments, assignment);
+        const assignmentID = element.assignment_id;
+        const assignmentIndex = getIDIndex(ag.assignments, assignmentID);
 
         //check if the due date past already
-        if (getCurrentDate() > ag.assignments[assignmentId].due_at) {
+        if (getCurrentDate() > ag.assignments[assignmentIndex].due_at) {
           // get learner's ID
-          const currentId = element.learner_id;
-          const index = getIDIndex(result, currentId);
+          const learnerID = element.learner_id;
+          const index = getIDIndex(result, learnerID);
 
           // store score student got on assignment
           let finalScore = element.submission.score;
 
           // store max poins they can recieve
-          const points_possible = ag.assignments[assignmentId].points_possible;
+          const points_possible = ag.assignments[assignmentIndex].points_possible;
 
           // throw error if the points possible is 0
           if (points_possible==0) {
@@ -140,29 +140,28 @@ const getLearnerData = (course, ag, submissions) => {
           // check if the student turn in the assignment late
           if (
             element.submission.submitted_at >
-            ag.assignments[assignmentId].due_at
+            ag.assignments[assignmentIndex].due_at
           ) {
             // deduct points from final grade from assignment if it's late
             finalScore -= points_possible * 0.1;
           }
 
-          result[index][assignment] = finalScore;
+          result[index][assignmentID] = finalScore;
         }
       });
 
       // add avg in result array
       for (let i = 0; i < result.length; i++) {
-        const assignmentID = makeAssignmentList(result[i]);
-        const avgValue = calculateScore(assignmentID, i);
-        const totalPoints = calculateTotalPoints(assignmentID, ag);
-        result[i].avg = parseFloat(avgValue / totalPoints.toFixed(2));
+        const assignmentIndex = makeAssignmentList(result[i]);
+        const totalSum = calculateScore(assignmentIndex, i);
+        const totalPoints = calculateTotalPoints(assignmentIndex, ag);
+        result[i].avg = parseFloat(totalSum / totalPoints.toFixed(2));
       }
 
       // divide individual score of assignments after calculating avg score of student
       result.forEach((element) => {
         for (const key in element) {
-          const regex = /[0-9]/;
-          if (regex.test(key)) {
+          if (key !== "id" && key !=="avg") {
             const index = getIDIndex(ag.assignments, key);
 
             element[key] /= ag.assignments[index].points_possible;
@@ -181,9 +180,11 @@ const getLearnerData = (course, ag, submissions) => {
   // making nested functions so those functions can be "private"
   //////////////////////////////////////////////////////////////////
   // get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
-  function getUniqueID(submission) {
+  function getUniqueIDs(submission) {
+    let uniqueIDs = [];
     const learnerID = new Set(submission.map((prop) => prop.learner_id));
-    return learnerID;
+    learnerID.forEach((element) => result.push({ id: element }));  
+    return uniqueIDs;
   }
 
   function calculateScore(arr, index) {
@@ -202,11 +203,14 @@ const getLearnerData = (course, ag, submissions) => {
     }
     return sum;
   }
+  function getFinalScore(ag, assignmentID, learnerID){
+
+  }
 };
 
-console.log(CourseInfo);
-console.log(AssignmentGroup);
-console.log(LearnerSubmissions);
+// console.log(CourseInfo);
+// console.log(AssignmentGroup);
+// console.log(LearnerSubmissions);
 console.log(getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions));
 
 /*result should look like 
