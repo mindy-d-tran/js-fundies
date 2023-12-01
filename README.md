@@ -5,6 +5,7 @@ This code returns an `array` that contains `objects`. Each object shows each **s
 ## Errors it catches
 - checks if due_at and submitted_at are of type `string`.
 - checks if all IDs are of type `number`.
+- checks if possible_points is `0`.
 
 ## Acknowledgments
 I would like to thank my friend, Roshan, for helping me make the code more readable.
