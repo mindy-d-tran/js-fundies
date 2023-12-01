@@ -113,9 +113,18 @@ const checkIDType = (id) => {
   if (typeof id === "number") {
     return true;
   } else {
-    throw `ID ${id} is not type number`;
+    throw `ID ${id} is not type number. It is of type ${typeof id}.`;
   }
 };
+
+// check if the date is in the right format
+const checkDateType = (date) => {
+  if(typeof date === "string"){
+    return true;
+  } else {
+    throw `Date is not of type string. It is of type ${typeof date}.`;
+  }
+}
 
 // returns all students current grades, and individual submission grades
 const getLearnerData = (course, ag, submissions) => {
@@ -208,6 +217,7 @@ function getFinalScore(ag, assignmentID, submission) {
   const assignmentIndex = getIDIndex(ag.assignments, assignmentID);
   let finalScore = -1;
   //check if the due date past already
+  checkDateType(ag.assignments[assignmentIndex].due_at);
   if (getCurrentDate() > ag.assignments[assignmentIndex].due_at) {
     // store score student got on assignment
     finalScore = submission.score; //140
@@ -221,6 +231,7 @@ function getFinalScore(ag, assignmentID, submission) {
     }
 
     // check if the student turn in the assignment late
+    checkDateType(submission.submitted_at);
     if (submission.submitted_at > ag.assignments[assignmentIndex].due_at) {
       // deduct points from final grade from assignment if it's late
       finalScore -= points_possible * 0.1; // 125
