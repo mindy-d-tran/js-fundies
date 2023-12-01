@@ -88,13 +88,16 @@ const getCurrentDate = () => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
+// make list of the id's from the result array
 const makeAssignmentList = (obj) => {
   const assignmentID = Object.keys(obj);
   const regex = /[0-9]/;
   for (let i = 0; i < assignmentID.length; i++) {
+    // if id contains number keep it in the array.
     if (regex.test(assignmentID[i])) {
       continue;
     }
+    // pop any element that's not a number
     assignmentID.pop();
   }
   return assignmentID;
@@ -106,6 +109,7 @@ const getLearnerData = (course, ag, submissions) => {
   // try to see if the course ID in given assignment group matches with the given course
   try {
     if (course.id === ag.course_id) {
+
       // add unique ids into the array
       const uniqueID = getUniqueID(submissions);
       uniqueID.forEach((element) => result.push({ id: element }));
@@ -127,13 +131,18 @@ const getLearnerData = (course, ag, submissions) => {
 
           // store max poins they can recieve
           const points_possible = ag.assignments[assignmentId].points_possible;
+
+          // throw error if the points possible is 0
           if (points_possible==0) {
             throw "Points possible is 0. Something is wrong."
           }
+
+          // check if the student turn in the assignment late
           if (
             element.submission.submitted_at >
             ag.assignments[assignmentId].due_at
           ) {
+            // deduct points from final grade from assignment if it's late
             finalScore -= points_possible * 0.1;
           }
 
@@ -149,6 +158,7 @@ const getLearnerData = (course, ag, submissions) => {
         result[i].avg = parseFloat(avgValue / totalPoints.toFixed(2));
       }
 
+      // divide individual score of assignments after calculating avg score of student
       result.forEach((element) => {
         for (const key in element) {
           const regex = /[0-9]/;
