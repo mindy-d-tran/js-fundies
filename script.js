@@ -1,3 +1,4 @@
+// does the same as the main branch, but only use 2 loops and fewer functions
 // The provided course information.
 const CourseInfo = {
   id: 451,
@@ -79,7 +80,7 @@ const LearnerSubmissions = [
 // get the id that matches
 const getIDIndex = (obj, index) => {
   // findIndex() will return -1 if it can't find anything that mactches the condition
-  if(obj.findIndex((element) => element.id == index) > -1){
+  if (obj.findIndex((element) => element.id == index) > -1) {
     return obj.findIndex((element) => element.id == index);
   } else {
     throw "Can not find matching IDs.";
@@ -93,21 +94,6 @@ const getCurrentDate = () => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 };
 
-// make list of the id's from the result array
-const makeAssignmentList = (obj) => {
-  const keys = Object.keys(obj);
-  for (let i = 0; i < keys.length; i++) {
-    // if id contains number keep it in the array.
-    if (keys[i] !== "avg" && keys[i] !== "id") {
-      continue;
-    }
-    checkIDType(parseInt(keys[i]));
-    // pop any element that's not a number
-    keys.pop();
-  }
-  return keys;
-};
-
 // check if the ID is of type number
 const checkIDType = (id) => {
   if (typeof id === "number") {
@@ -119,12 +105,60 @@ const checkIDType = (id) => {
 
 // check if the date is in the right format
 const checkDateType = (date) => {
-  if(typeof date === "string"){
+  if (typeof date === "string") {
     return true;
   } else {
     throw `Date is not of type string. It is of type ${typeof date}.`;
   }
-}
+};
+
+// get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
+const getUniqueLearners = (submission) => {
+  let uniqueIDs = [];
+  // .map() will list all of the learner_id, new Set() will keep unique values
+  const learnerIDs = new Set(submission.map((prop) => prop.learner_id));
+  learnerIDs.forEach((element) => uniqueIDs.push({ id: element }));
+  return uniqueIDs;
+};
+
+const getPoints = (ag, assignmentID, submission) => {
+  const assignmentIndex = getIDIndex(ag.assignments, assignmentID);
+  // make points and points_possible -1 if the assignment isn't due yet
+  let points = -1;
+  let points_possible = -1;
+  //check if the due date past already
+  checkDateType(ag.assignments[assignmentIndex].due_at);
+  if (getCurrentDate() > ag.assignments[assignmentIndex].due_at) {
+    // store score student got on assignment
+    points = submission.score; //140
+
+    // store max poins they can recieve
+    points_possible = ag.assignments[assignmentIndex].points_possible;
+
+    // throw error if the points possible is 0
+    if (points_possible == 0) {
+      throw "Points possible is 0. Something is wrong.";
+    }
+
+    // check if the student turn in the assignment late
+    checkDateType(submission.submitted_at);
+    if (submission.submitted_at > ag.assignments[assignmentIndex].due_at) {
+      // deduct points from final grade from assignment if it's late
+      points -= points_possible * 0.1; // 125
+    }
+  }
+  return [points, points_possible];
+};
+
+// add total points together
+const addPoints = (arr, index, property, value) => {
+  // if the property exist, add to current value else make new property and set value to it
+  if (arr[index].hasOwnProperty(property)) {
+    arr[index][property] += value;
+  } else {
+    arr[index][property] = value;
+  }
+};
 
 // returns all students current grades, and individual submission grades
 const getLearnerData = (course, ag, submissions) => {
@@ -142,40 +176,24 @@ const getLearnerData = (course, ag, submissions) => {
       // add the submissions to user's data
       submissions.forEach((element) => {
         checkIDType(element.assignment_id);
-        let finalScore = getFinalScore(
-          ag,
-          element.assignment_id,
-          element.submission
-        );
-        
+        let points = getPoints(ag, element.assignment_id, element.submission);
+
         checkIDType(element.learner_id);
         const resultIndex = getIDIndex(result, element.learner_id);
-        if (finalScore > -1) {
-          result[resultIndex][element.assignment_id] = finalScore;
+        if (points[0] > -1) {
+          result[resultIndex][element.assignment_id] = points[0] / points[1];
         }
+        addPoints(result, resultIndex, "totalPointsEarned", points[0]);
+        addPoints(result, resultIndex, "totalPotentialPointsEarned", points[1]);
       });
 
-      // add avg in result array
-      for (let i = 0; i < result.length; i++) {
-        const assingmentList = makeAssignmentList(result[i]);
-        const totalScoreSum = calculateScore(assingmentList, result[i]); // rename avgValue to TotalSum
-        const totalPoints = calculateTotalPoints(assingmentList, ag); // totalPoints to totalPointsPossible
-        result[i].avg = parseFloat(totalScoreSum / totalPoints.toFixed(2));
+      // make avg property and remove totalPointsEarned totalPotentialPointsEarned
+      for (const element of result) {
+        element.avg =
+          element.totalPointsEarned / element.totalPotentialPointsEarned;
+        delete element.totalPointsEarned;
+        delete element.totalPotentialPointsEarned;
       }
-
-      // divide individual score of assignments after calculating avg score of student
-      result.forEach((element) => {
-        for (const key in element) {
-          if (key !== "avg" && key !== "id") {
-            const index = getIDIndex(ag.assignments, key);
-            if (ag.assignments[index].points_possible === 0) {
-              throw "Points possible is 0. Something is wrong.";
-            }
-            element[key] /= ag.assignments[index].points_possible;
-            element[key] = parseFloat(element[key].toFixed(2));
-          }
-        }
-      });
 
       return result;
     } else {
@@ -186,63 +204,6 @@ const getLearnerData = (course, ag, submissions) => {
   }
 };
 
-// making nested functions so those functions can be "private"
-//////////////////////////////////////////////////////////////////
-// get unique values reference https://stackoverflow.com/questions/15125920/how-to-get-distinct-values-from-an-array-of-objects-in-javascript
-function getUniqueLearners(submission) {
-  let uniqueIDs = [];
-  const learnerIDs = new Set(submission.map((prop) => prop.learner_id));
-  learnerIDs.forEach((element) => uniqueIDs.push({ id: element }));
-  return uniqueIDs;
-}
-
-function calculateScore(arr, learner) {
-  let sum = 0;
-  for (let i = 0; i < arr.length; i++) {
-    sum += learner[arr[i]];
-  }
-  return sum;
-}
-
-function calculateTotalPoints(arr, ag) {
-  let sum = 0;
-  for (let i = 0; i < arr.length; i++) {
-    const index = getIDIndex(ag.assignments, arr[i]);
-    sum += ag.assignments[index].points_possible;
-  }
-  return sum;
-}
-
-function getFinalScore(ag, assignmentID, submission) {
-  const assignmentIndex = getIDIndex(ag.assignments, assignmentID);
-  let finalScore = -1;
-  //check if the due date past already
-  checkDateType(ag.assignments[assignmentIndex].due_at);
-  if (getCurrentDate() > ag.assignments[assignmentIndex].due_at) {
-    // store score student got on assignment
-    finalScore = submission.score; //140
-
-    // store max poins they can recieve
-    const points_possible = ag.assignments[assignmentIndex].points_possible;
-
-    // throw error if the points possible is 0
-    if (points_possible == 0) {
-      throw "Points possible is 0. Something is wrong.";
-    }
-
-    // check if the student turn in the assignment late
-    checkDateType(submission.submitted_at);
-    if (submission.submitted_at > ag.assignments[assignmentIndex].due_at) {
-      // deduct points from final grade from assignment if it's late
-      finalScore -= points_possible * 0.1; // 125
-    }
-  }
-  return finalScore;
-}
-
-// console.log(CourseInfo);
-// console.log(AssignmentGroup);
-// console.log(LearnerSubmissions);
 console.log(getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions));
 
 /*result should look like 
